@@ -287,7 +287,7 @@ export default function Home() {
   function getName(input: string) {
     const nameOllama = new ChatOllama({
       baseUrl: "http://localhost:11434",
-      model: "llama2",
+      model: activeModel,
       verbose: false,
     });
     return nameOllama!
@@ -323,10 +323,10 @@ export default function Home() {
           setOllama={setOllama}
         />
         <div className="flex w-full flex-1 flex-shrink flex-col items-center justify-end gap-y-4 overflow-hidden whitespace-break-spaces">
-          <div className="flex w-full flex-1 flex-col items-center justify-end gap-y-4 overflow-scroll whitespace-break-spaces">
+          <div className="flex w-full flex-1 flex-col items-center justify-end gap-y-4 overflow-y-scroll whitespace-break-spaces">
             <div
               ref={msgContainerRef}
-              className="block h-fit w-full flex-col items-center justify-center gap-y-1 overflow-scroll rounded-md p-2"
+              className="block h-fit w-full flex-col items-center justify-center gap-y-1 overflow-y-auto rounded-md p-2"
             >
               {messages.map((msg) => (
                 <div

@@ -2,6 +2,7 @@
 
 import { ChatOllama } from "langchain/chat_models/ollama";
 import { useEffect, useRef, useState } from "react";
+import ModelsDropdown from "./modelsDropdown";
 
 type Props = {
   documentName: string;
@@ -22,6 +23,7 @@ export default function AppNavbar({
 }: Props) {
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -36,6 +38,7 @@ export default function AppNavbar({
         !shareMenuRef.current.contains(event.target)
       ) {
         setIsShareMenuOpen(false);
+        setIsModelDropdownOpen(false);
       }
 
       if (
@@ -44,6 +47,7 @@ export default function AppNavbar({
         !profileMenuRef.current.contains(event.target)
       ) {
         setIsProfileMenuOpen(false);
+        setIsModelDropdownOpen(false);
       }
     };
 
@@ -54,18 +58,16 @@ export default function AppNavbar({
     };
   }, [isShareMenuOpen, isProfileMenuOpen]);
 
-  function toggleModel() {
-    const i =
-      (availableModels.findIndex((x) => x.name == activeModel) + 1) %
-      availableModels.length;
-    console.log(i, activeModel, availableModels);
-    setActiveModel(availableModels[i].name);
+  function setCurrentModel(
+    newModel: any
+  ) {
+    setActiveModel(newModel.name);
     const newOllama = new ChatOllama({
       baseUrl: "http://localhost:11434",
-      model: availableModels[i]?.name,
+      model: newModel.name,
     });
     //store in local storage
-    localStorage.setItem("initialLocalLM", availableModels[i]?.name);
+    localStorage.setItem("initialLocalLM", newModel.name);
     setOllama(newOllama);
   }
 
@@ -75,7 +77,7 @@ export default function AppNavbar({
   return (
     <>
       <nav className="sticky left-0 top-0 z-20 w-full border-b border-white/10 bg-black">
-        <div className="mx-auto flex flex-wrap items-center justify-between px-20 py-2.5">
+        <div className="mx-auto flex flex-wrap items-center justify-between pl-20 pr-5 py-2.5">
           <div className="flex space-x-8">
             <input
               className="w-64 ring-none flex cursor-text items-center gap-x-2 rounded-md border-transparent bg-transparent px-2 py-1 text-xs font-medium text-white outline-none placeholder:text-white/80 hover:bg-white/10 "
@@ -85,11 +87,19 @@ export default function AppNavbar({
             ></input>
           </div>
           <button
-            className="cursor-pointer text-xs text-white transition-colors hover:bg-white/10 rounded-md px-2 py-1"
+            className="cursor-pointer text-xs text-white transition-colors hover:bg-white/10 rounded-md px-2 py-1 relative min-w-[250px]"
             contentEditable={false}
-            onClick={toggleModel}
+            onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
           >
             {activeModel}
+            {isModelDropdownOpen &&
+              <ModelsDropdown
+                activeModel={activeModel}
+                availableModels={availableModels}
+                setIsModelsDropdownOpen={setIsModelDropdownOpen}
+                setCurrentModel={setCurrentModel}
+              />
+            }
           </button>
         </div>
       </nav>
